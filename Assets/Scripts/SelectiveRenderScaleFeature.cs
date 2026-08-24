@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
@@ -166,7 +166,10 @@ public class SelectiveRenderScaleFeature : ScriptableRendererFeature
             depthDescriptor.autoGenerateMips = false;
             RenderingUtils.ReAllocateIfNeeded(ref OpaqueColor, opaqueColorDescriptor, FilterMode.Bilinear, TextureWrapMode.Clamp, name: "_LowResOpaqueColor");
             RenderingUtils.ReAllocateIfNeeded(ref OpaqueDepth, depthDescriptor, FilterMode.Point, TextureWrapMode.Clamp, isShadowMap: false, name: "_LowResOpaqueDepth");
-            RenderingUtils.ReAllocateIfNeeded(ref TransparentColor, transparentColorDescriptor, FilterMode.Bilinear, TextureWrapMode.Clamp, name: "_LowResTransparentColor");
+            // IMPORTANT: transparent coverage has hard occlusion holes written by PrepareTransparentDepthPass.
+            // The composite shader deliberately controls colour filtering itself and uses point alpha as a
+            // coverage mask, so keep the RT point-filtered as a safe default too.
+            RenderingUtils.ReAllocateIfNeeded(ref TransparentColor, transparentColorDescriptor, FilterMode.Point, TextureWrapMode.Clamp, name: "_LowResTransparentColor");
             RenderingUtils.ReAllocateIfNeeded(ref TransparentDepth, depthDescriptor, FilterMode.Point, TextureWrapMode.Clamp, isShadowMap: false, name: "_LowResTransparentDepth");
         }
 
